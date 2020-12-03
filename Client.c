@@ -27,7 +27,7 @@ int main(void)
 	if (socketFD < 0)
 	{
 		perror("Could not create socket.");
-		exit(0);
+		exit(1);
 	}
 
 	memset(&serverAddr, '\0', sizeof(serverAddr));

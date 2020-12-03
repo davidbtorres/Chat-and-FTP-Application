@@ -24,17 +24,17 @@ int main(void)
 	socklen_t addressSize;
 	int numBytes;
 
+
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (socketFD < 0)
 	{
 		perror("Could not create socket.");
-		exit(0);
+		exit(1);
 	}
 
 	memset(&serverAddr, '\0', sizeof(serverAddr));
 	memset(&clientAddr, '\0', sizeof(clientAddr));
-
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
@@ -46,4 +46,9 @@ int main(void)
 	numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
 	buffer[numBytes] = '\0';
   	printf("Data Received: %s", buffer);
-  }
+
+}
+
+
+
+
