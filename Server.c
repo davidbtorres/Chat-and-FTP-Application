@@ -14,32 +14,36 @@ Networking
 #include <sys/types.h>
 
 #define PORT 5000
+#define BUFFERSIZE 1024
 
 int main(void)
 {
 	int socketFD;
 	struct sockaddr_in serverAddr, clientAddr;
+	char buffer[BUFFERSIZE];
+	socklen_t addressSize;
+	int numBytes;
 
-	if (socketFD = socket(AF_INET, SOCK_DGRAM, 0) == -1)
+	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (socketFD < 0)
 	{
-		perror("Socket creation failed");
-		exit(EXIT_FAILURE)
-	}
-	else if (socketFD == 0)
-	{
-		printf("Socket creation successful");
+		perror("Could not create socket.");
+		exit(0);
 	}
 
-	memset(&serverAddr, 0, sizeof(serverAddr));
-	memset(&serverAddr, 0, sizeof(serverAddr));
+	memset(&serverAddr, '\0', sizeof(serverAddr));
+	memset(&clientAddr, '\0', sizeof(clientAddr));
+
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	
+	bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 
-
-
-
-}
+	addressSize = sizeof(clientAddr);
+	numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+	buffer[numBytes] = '\0';
+  	printf("Data Received: %s", buffer);
+  }
