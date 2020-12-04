@@ -23,7 +23,9 @@ int main(void)
 	char buffer[BUFFERSIZE];
 	socklen_t addressSize;
 	int numBytes;
-
+	struct user allUsers[100];
+	int numUsers = 0;
+	int isRunning = 1;
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -43,11 +45,42 @@ int main(void)
 	bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 
 	addressSize = sizeof(clientAddr);
-	numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
-	buffer[numBytes] = '\0';
+
+	while (isRunning)
+	{
+		
+		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+
+		if (buffer[0] == 0)
+		{
+			option0(&clientAddr);
+		}
+	}
+
+	//buffer[numBytes] = '\0';
   	printf("Data Received: %s", buffer);
 
 }
+
+int signup(char* username, char* password)
+{
+
+}
+
+void option0(sockaddr_in* clientAddr)
+{
+	for (int i = 0; i < numUsers; i++)
+	{
+		if (allUsers[i].isOnline == 1)
+		{
+			buffer[i] = allUsers[i].username;
+		}
+	}
+
+	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
+}
+
+
 
 
 
