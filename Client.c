@@ -21,6 +21,8 @@ int main(void)
 	int socketFD;
 	struct sockaddr_in serverAddr;
 	char buffer[BUFFERSIZE];
+	socklen_t addressSize;
+
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -36,6 +38,15 @@ int main(void)
 	serverAddr.sin_port = htons(PORT);
   	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	strcpy(buffer, "Hello Server\n");
+    bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+
+	strcpy(buffer, "0");
 	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+
+	addressSize = sizeof(serverAddr);
+
+	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+
+	printf("%s\n", buffer);
+
 }

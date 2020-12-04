@@ -12,6 +12,7 @@ Networking
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include "Server.h"
 
 #define PORT 5000
 #define BUFFERSIZE 1024
@@ -20,11 +21,11 @@ int main(void)
 {
 	int socketFD;
 	struct sockaddr_in serverAddr, clientAddr;
-	char buffer[BUFFERSIZE];
 	socklen_t addressSize;
 	int numBytes;
 	struct user allUsers[100];
 	int numUsers = 0;
+	char buffer[BUFFERSIZE];
 	int isRunning = 1;
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
@@ -48,36 +49,28 @@ int main(void)
 
 	while (isRunning)
 	{
+		printf("%s\n", "I am running");
 		
 		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
 
-		if (buffer[0] == 0)
+		if (buffer[0] == '0')
 		{
-			option0(&clientAddr);
+			printf("%s\n", "Option 0 was recieved.");
+
+			for (int i = 0; i < numUsers; i++)
+			{
+				if (allUsers[i].isOnline == 1)
+				{
+					buffer[i] = allUsers[i].username;
+				}
+			}
+
+			sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));		
 		}
 	}
 
 	//buffer[numBytes] = '\0';
   	printf("Data Received: %s", buffer);
-
-}
-
-int signup(char* username, char* password)
-{
-
-}
-
-void option0(sockaddr_in* clientAddr)
-{
-	for (int i = 0; i < numUsers; i++)
-	{
-		if (allUsers[i].isOnline == 1)
-		{
-			buffer[i] = allUsers[i].username;
-		}
-	}
-
-	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 }
 
 
