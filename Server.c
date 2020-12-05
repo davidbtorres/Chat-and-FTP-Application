@@ -53,7 +53,6 @@ int main(void)
 
 	addressSize = sizeof(clientAddr);
 
-
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client.\n");
@@ -71,11 +70,11 @@ int main(void)
 
 			for (int i = 0; i < numUsers; i++)
 			{
-				//if (allUsers[i].isOnline == 1)
-				//{
+				if (allUsers[i].isOnline == 1)
+				{
 					strcat(bufferOut, allUsers[i].username);
 					strcat(bufferOut, "\n");
-				//}
+				}
 			}
 		}
 
@@ -90,9 +89,35 @@ int main(void)
 			printf("Token: %s\n", token);
 			strcpy(allUsers[numUsers].password, token);
 
+			allUsers[numUsers].isOnline = 0;
 			allUsers[numUsers].clientAddr = clientAddr;
 			numUsers++;
-			strcpy(bufferOut, "Server: Successfully registered");
+			
+			strcpy(bufferOut, "From Server: Successfully registered");
+		}
+
+		else if (strcmp(token, "signin") == 0)
+		{
+			printf("%s\n", "Signin option executed.");
+			token = strtok(NULL, delimiter);
+			printf("Token: %s\n", token);
+
+			for (int i = 0; i < numUsers; i++)
+			{
+				strcpy(bufferOut, "From Server: Could not sign in.");
+
+				if (strcmp(allUsers[i].username, token) == 0)
+				{
+					token = strtok(NULL, delimiter);
+					printf("Token: %s\n", token);
+
+					if (strcmp(allUsers[i].password, token) == 0)
+					{
+						allUsers[i].isOnline = 1;
+						strcpy(bufferOut, "From Server: Successfully signed in.");
+					}
+				}
+			}
 		}
 
 		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
