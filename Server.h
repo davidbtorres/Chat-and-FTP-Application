@@ -11,6 +11,7 @@ struct user
 };
 
 void serverGreeting();
+int userOnline(struct sockaddr_in clientAddr);
 int signup(char* username, char* password);
 int signin(char* username, char* password);
 void logout(char* username);

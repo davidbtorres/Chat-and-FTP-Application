@@ -17,15 +17,21 @@ Networking
 #define PORT 5000
 #define BUFFERSIZE 1024
 
+struct user allUsers[100];
+int numUsers = 0;
+
 int main(void)
 {
 	int socketFD;
 	struct sockaddr_in serverAddr, clientAddr;
 	socklen_t addressSize;
 	int numBytes;
-	struct user allUsers[100];
-	int numUsers = 0;
+	
+	char* token;
+	const char delimiter[2] = ",";
+	
 	char buffer[BUFFERSIZE];
+	char bufferOut[BUFFERSIZE];
 	int isRunning = 1;
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
@@ -47,31 +53,53 @@ int main(void)
 
 	addressSize = sizeof(clientAddr);
 
+
 	while (isRunning)
-	{
-		printf("%s\n", "I am running");
-		
+	{			
+		printf("%s", "Awaiting client.\n");
 		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
 
-		if (buffer[0] == '0')
+		strcpy(bufferOut, buffer);
+
+		token = strtok(buffer, delimiter);
+		printf("Token: %s\n", token);
+
+		if (strcmp(token, "0") == 0)
 		{
 			printf("%s\n", "Option 0 was recieved.");
+			memset(bufferOut, '\0', sizeof(buffer));
 
 			for (int i = 0; i < numUsers; i++)
 			{
-				if (allUsers[i].isOnline == 1)
-				{
-					buffer[i] = allUsers[i].username;
-				}
+				//if (allUsers[i].isOnline == 1)
+				//{
+					strcat(bufferOut, allUsers[i].username);
+					strcat(bufferOut, "\n");
+				//}
 			}
-
-			sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));		
 		}
-	}
 
-	//buffer[numBytes] = '\0';
-  	printf("Data Received: %s", buffer);
+		else if (strcmp(token, "register") == 0)
+		{
+			printf("%s\n", "Register option executed.");
+			token = strtok(NULL, delimiter);
+			printf("Token: %s\n", token);
+			strcpy(allUsers[numUsers].username, token);
+
+			token = strtok(NULL, delimiter);
+			printf("Token: %s\n", token);
+			strcpy(allUsers[numUsers].password, token);
+
+			allUsers[numUsers].clientAddr = clientAddr;
+			numUsers++;
+			strcpy(bufferOut, "Server: Successfully registered");
+		}
+
+		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
+	}
 }
+
+
 
 
 
