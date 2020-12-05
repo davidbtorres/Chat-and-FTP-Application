@@ -102,18 +102,18 @@ int main(void)
 			token = strtok(NULL, delimiter);
 			printf("Token: %s\n", token);
 
-			for (int i = 0; i < numUsers; i++)
-			{
-				strcpy(bufferOut, "From Server: Could not sign in.");
+			strcpy(bufferOut, "From Server: Could not sign in.");
 
-				if (strcmp(allUsers[i].username, token) == 0)
+			for (int k = 0; k < numUsers; k++)
+			{
+				if (strcmp(allUsers[k].username, token) == 0)
 				{
 					token = strtok(NULL, delimiter);
 					printf("Token: %s\n", token);
 
-					if (strcmp(allUsers[i].password, token) == 0)
+					if (strcmp(allUsers[k].password, token) == 0)
 					{
-						allUsers[i].isOnline = 1;
+						allUsers[k].isOnline = 1;
 						strcpy(bufferOut, "From Server: Successfully signed in.");
 					}
 				}
@@ -123,11 +123,3 @@ int main(void)
 		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 	}
 }
-
-
-
-
-
-
-
-
