@@ -90,7 +90,6 @@ int main(void)
 			strcpy(allUsers[numUsers].password, token);
 
 			allUsers[numUsers].isOnline = 0;
-			allUsers[numUsers].clientAddr = clientAddr;
 			numUsers++;
 			
 			strcpy(bufferOut, "From Server: Successfully registered");
@@ -114,7 +113,12 @@ int main(void)
 					if (strcmp(allUsers[k].password, token) == 0)
 					{
 						allUsers[k].isOnline = 1;
+						allUsers[k].clientAddr.sin_family = clientAddr.sin_family;
+						allUsers[k].clientAddr.sin_port = clientAddr.sin_port;
+						allUsers[k].clientAddr.sin_addr.s_addr = clientAddr.sin_addr.s_addr;
+						printf("%p", &clientAddr);
 						strcpy(bufferOut, "From Server: Successfully signed in.");
+
 					}
 				}
 			}
