@@ -124,6 +124,7 @@ int main(void)
 			}
 		}
 
+		printf("Buffer: %s     Recieved from: %s", bufferOut, &clientAddr);
 		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 	}
 }
