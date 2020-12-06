@@ -57,6 +57,7 @@ int main(void)
 	{			
 		printf("%s", "Awaiting client.\n");
 		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+		printf("%s\n", "DLSKGJSLDKGJ");
 
 		strcpy(bufferOut, buffer);
 
@@ -124,7 +125,7 @@ int main(void)
 			}
 		}
 
-		printf("Buffer: %s     Recieved from: %s", bufferOut, &clientAddr);
+		printf("Buffer: %s     Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
 		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 	}
 }
