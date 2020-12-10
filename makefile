@@ -23,12 +23,12 @@ Server: $(OBJS0) $(LFLAGS)
 Client: $(OBJS1) $(LFLAGS)
 	$(CC) -g $(OBJS1) -o $(OUT1)
 
-Server.o: Server.c,
-	$(CC) $(FLAGS) Server.c, 
+Server.o: Server.c
+	$(CC) $(FLAGS) Server.c
 
 Client.o: Client.c
 	$(CC) $(FLAGS) Client.c 
 
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f $(OBJS) $(OUT) $(OBJS1) $(OUT1)
