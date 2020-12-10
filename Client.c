@@ -13,7 +13,7 @@ Networking
 #include <string.h>
 #include <sys/types.h>
 
-#define PORT 5000
+#define PORT 6001
 #define BUFFERSIZE 1024
 
 int main(void)
@@ -33,14 +33,18 @@ int main(void)
 		exit(1);
 	}
 
-	memset(&serverAddr, '\0', sizeof(serverAddr));
+	memset(&serverAddr, 0, sizeof(serverAddr));
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	inet_pton(AF_INET, "73.127.146.89", &serverAddr.sin_addr);
-  	//serverAddr.sin_addr.s_addr = inet_addr("73.98.17.121");
+	//inet_pton(AF_INET, "73.127.146.89", &serverAddr.sin_addr);
+  	serverAddr.sin_addr.s_addr = inet_addr("73.127.146.89");
 
-    // bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    if(bindStatus == -1)
+    {
+    	perror("Bind failed");
+    }
 
     while (isRunning)
     {

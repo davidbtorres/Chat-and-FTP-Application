@@ -14,7 +14,7 @@ Networking
 #include <sys/types.h>
 #include "Server.h"
 
-#define PORT 5000
+#define PORT 6001
 #define BUFFERSIZE 1024
 
 struct user allUsers[100];
@@ -23,7 +23,7 @@ int numUsers = 0;
 int main(void)
 {
 	int socketFD;
-	struct sockaddr_in clientAddr;
+	struct sockaddr_in serverAddr, clientAddr;
 	socklen_t addressSize;
 	int numBytes;
 	
@@ -42,13 +42,18 @@ int main(void)
 		exit(1);
 	}
 
-	memset(&clientAddr, '\0', sizeof(clientAddr));
+	memset(&serverAddr, 0, sizeof(serverAddr));
+	memset(&clientAddr, 0, sizeof(clientAddr));
 
-	clientAddr.sin_family = AF_INET;
-	clientAddr.sin_port = htons(PORT);
-	clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(PORT);
+	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	bind(socketFD, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
+	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+	if(bindStatus == -1)
+	{
+		perror("Bind failed");
+	}
 
 	addressSize = sizeof(clientAddr);
 
