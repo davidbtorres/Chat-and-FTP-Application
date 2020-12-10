@@ -37,17 +37,22 @@ int main(void)
 
 	serverAddr.sin6_family = AF_INET;
 	serverAddr.sin6_port = htons(PORT);
-	inet_pton(AF_INET6, "2601:8c1:8382:2070::6239", &serverAddr.sin6_addr);
+	inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin6_addr);
   	//serverAddr.sin_addr.s_addr = inet_addr("73.98.17.121");
 
-    bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    // bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 
     while (isRunning)
     {
+    	printf("Enter message\n")
     	scanf("%s", buffer);
     	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    	printf("Message sent\n")
     	addressSize = sizeof(serverAddr);
     	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+    	prinft("Delivery report received from server\n")
     	printf("%s\n", buffer);
     }
+
+    close(socketFD);
 }
