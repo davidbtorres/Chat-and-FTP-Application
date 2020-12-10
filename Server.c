@@ -30,7 +30,7 @@ int main(void)
 	char* token;
 	const char delimiter[2] = ",";
 	
-	char buffer[BUFFERSIZE];
+	char* buffer[BUFFERSIZE];
 	char bufferOut[BUFFERSIZE];
 	int isRunning = 1;
 
@@ -51,17 +51,17 @@ int main(void)
 
 	bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 
-	addressSize = sizeof(clientAddr);
+	addressSize = sizeof(serverAddr);
 
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client.\n");
-		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 		printf("%s\n", "DLSKGJSLDKGJ");
 
-		strcpy(bufferOut, buffer);
+		strcpy(bufferOut, *buffer);
 
-		token = strtok(buffer, delimiter);
+		token = strtok(*buffer, delimiter);
 		printf("Token: %s\n", token);
 
 		if (strcmp(token, "0") == 0)

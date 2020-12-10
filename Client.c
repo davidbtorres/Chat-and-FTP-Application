@@ -19,7 +19,7 @@ Networking
 int main(void)
 {
 	int socketFD;
-	struct sockaddr_in6 serverAddr;
+	struct sockaddr_in serverAddr;
 	char buffer[BUFFERSIZE];
 	socklen_t addressSize;
 	int isRunning = 1;
@@ -35,9 +35,9 @@ int main(void)
 
 	memset(&serverAddr, '\0', sizeof(serverAddr));
 
-	serverAddr.sin6_family = AF_INET;
-	serverAddr.sin6_port = htons(PORT);
-	inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin6_addr);
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(PORT);
+	inet_pton(AF_INET, "73.127.146.89", &serverAddr.sin_addr);
   	//serverAddr.sin_addr.s_addr = inet_addr("73.98.17.121");
 
     // bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
