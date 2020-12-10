@@ -44,13 +44,13 @@ int main(void)
 
     while (isRunning)
     {
-    	printf("Enter message\n")
+    	printf("Enter message\n");
     	scanf("%s", buffer);
     	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
-    	printf("Message sent\n")
+    	printf("Message sent\n");
     	addressSize = sizeof(serverAddr);
     	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-    	prinft("Delivery report received from server\n")
+    	printf("Delivery report received from server\n");
     	printf("%s\n", buffer);
     }
 
