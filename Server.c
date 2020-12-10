@@ -23,7 +23,7 @@ int numUsers = 0;
 int main(void)
 {
 	int socketFD;
-	struct sockaddr_in serverAddr, clientAddr;
+	struct sockaddr_in clientAddr;
 	socklen_t addressSize;
 	int numBytes;
 	
@@ -42,14 +42,13 @@ int main(void)
 		exit(1);
 	}
 
-	memset(&serverAddr, '\0', sizeof(serverAddr));
 	memset(&clientAddr, '\0', sizeof(clientAddr));
 
-	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	clientAddr.sin_family = AF_INET;
+	clientAddr.sin_port = htons(PORT);
+	clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+	bind(socketFD, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 
 	addressSize = sizeof(clientAddr);
 
