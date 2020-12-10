@@ -51,15 +51,15 @@ int main(void)
 
 	bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 
-	addressSize = sizeof(serverAddr);
+	addressSize = sizeof(clientAddr);
 
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client.\n");
-		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
 		printf("%s\n", "DLSKGJSLDKGJ");
 
-		if(numBytes <= 0)
+		if(numBytes < 0)
 		{
 			perror("Unable to recieve message");
 		}
