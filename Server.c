@@ -161,3 +161,19 @@ void signout(char username[])
 		}
 	}
 }
+
+int findUser(char username[])
+{
+	int result = -1;
+
+	for (int i = 0; i < numUsers; i++)
+	{
+		if (strcmp(allUsers[i].username, username) == 0)
+		{
+			result = i;
+			break;
+		}
+	}
+
+	return result;
+}
