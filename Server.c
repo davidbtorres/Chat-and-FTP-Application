@@ -142,10 +142,11 @@ int main(void)
 				if (strcmp(allUsers[k].username, token) == 0)
 				{
 					allUsers[k].isOnline = 0;
+					strcpy(bufferOut, "signout");
+					break;
 				}
 			}
 			
-			strcpy(bufferOut, "From Server: Successfully signed out");
 		}
 
 		printf("Buffer: %s     Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);

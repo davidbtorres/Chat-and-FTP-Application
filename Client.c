@@ -23,6 +23,8 @@ int main(void)
 	char buffer[BUFFERSIZE];
 	socklen_t addressSize;
 	int isRunning = 1;
+    char* token;
+    const char delimiter[2] = ",";
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -46,7 +48,15 @@ int main(void)
     	printf("Message sent\n");
     	addressSize = sizeof(serverAddr);
     	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-    	printf("Delivery report received from server\n");
+        token = strtok(buffer, delimiter);
+
+        if (strcmp(token, "signout") == 0)
+        {
+  
+            printf("From server: Signout successful\n");
+            break;
+        }
+
     	printf("%s\n", buffer);
     }
 
