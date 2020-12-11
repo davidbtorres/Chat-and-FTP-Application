@@ -14,5 +14,6 @@ void reg(char password[], char username[]);
 void signin(char password[], char username[], struct sockaddr_in* clientAddr);
 void signout(char username[]);
 void option0();
+int findUser(char username[]);
 
 #endif
