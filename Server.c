@@ -87,10 +87,10 @@ int main(void)
 
 		else if (strcmp(token, "signout") == 0)
 		{
-			
+			signout(strtok(NULL, delimiter));
 		}
 
-		printf("Buffer: %s     Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
+		printf("Buffer: %s Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
 		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
 	}
 
@@ -147,7 +147,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 	}
 }
 
-void signout(char username[], struct sockaddr_in* clientAddr)
+void signout(char username[])
 {
 	printf("%s\n", "Signout option executed.");
 
