@@ -1,7 +1,6 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-
 struct user
 {
 	char username[32];

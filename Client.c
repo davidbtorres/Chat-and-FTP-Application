@@ -52,7 +52,7 @@ int main(void)
 
         if (strcmp(token, "signout") == 0)
         {
-  
+
             printf("From server: Signout successful\n");
             break;
         }

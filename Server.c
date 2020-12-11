@@ -58,13 +58,14 @@ int main(void)
 
 	while (isRunning)
 	{			
-		printf("%s", "Awaiting client.\n");
-		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+		printf("%s", "Awaiting client...\n");
 
+		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
 		if(numBytes < 0)
 		{
 			perror("Unable to recieve message");
 		}
+		
 		strcpy(bufferOut, buffer);
 
 		token = strtok(buffer, delimiter);
@@ -141,6 +142,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 				allUsers[k].clientAddr.sin_family = clientAddr->sin_family;
 				allUsers[k].clientAddr.sin_port = clientAddr->sin_port;
 				allUsers[k].clientAddr.sin_addr.s_addr = clientAddr->sin_addr.s_addr;
+				
 				strcpy(bufferOut, "From Server: Successfully signed in.");
 			}
 		}
