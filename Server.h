@@ -15,7 +15,7 @@ int userOnline(struct sockaddr_in clientAddr);
 int signup(char* username, char* password);
 int signin(char* username, char* password);
 void logout(char* username);
-void option0(struct sockaddr_in* clientAddr); // List Users
+void option0(char buffer[], int bufferLength); // List Users
 int option1(char*, ...); // Create new chat with specified users
 void option2(char* fielname, char*, ...); // File transfer
 

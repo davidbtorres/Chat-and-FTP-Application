@@ -73,17 +73,7 @@ int main(void)
 
 		if (strcmp(token, "0") == 0)
 		{
-			printf("%s\n", "Option 0 was recieved.");
-			memset(bufferOut, '\0', sizeof(buffer));
-
-			for (int i = 0; i < numUsers; i++)
-			{
-				if (allUsers[i].isOnline == 1)
-				{
-					strcat(bufferOut, allUsers[i].username);
-					strcat(bufferOut, "\n");
-				}
-			}
+			option0(bufferOut, sizeof(bufferOut));
 		}
 
 		else if (strcmp(token, "register") == 0)
@@ -154,4 +144,19 @@ int main(void)
 	}
 
 	close(socketFD);
+}
+
+void option0(char buffer[], int bufferLength)
+{
+	printf("%s\n", "Option 0 was recieved.");
+	memset(buffer, '\0', bufferLength);
+
+	for (int i = 0; i < numUsers; i++)
+	{
+		if (allUsers[i].isOnline == 1)
+		{
+			strcat(buffer, allUsers[i].username);
+			strcat(buffer, "\n");
+		}
+	}
 }
