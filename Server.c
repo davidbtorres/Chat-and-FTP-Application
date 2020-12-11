@@ -14,7 +14,7 @@ Networking
 #include <sys/types.h>
 #include "Server.h"
 
-#define PORT 6001
+#define PORT 5000
 #define BUFFERSIZE 1024
 
 struct user allUsers[100];
