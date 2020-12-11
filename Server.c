@@ -87,19 +87,6 @@ int main(void)
 
 		else if (strcmp(token, "signout") == 0)
 		{
-			printf("%s\n", "Signout option executed.");
-			token = strtok(NULL, delimiter);
-			printf("Token: %s\n", token);
-			
-			for (int k = 0; k < numUsers; k++)
-			{
-				if (strcmp(allUsers[k].username, token) == 0)
-				{
-					allUsers[k].isOnline = 0;
-					strcpy(bufferOut, "signout");
-					break;
-				}
-			}
 			
 		}
 
@@ -156,6 +143,21 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 				allUsers[k].clientAddr.sin_addr.s_addr = clientAddr->sin_addr.s_addr;
 				strcpy(bufferOut, "From Server: Successfully signed in.");
 			}
+		}
+	}
+}
+
+void signout(char username[], struct sockaddr_in* clientAddr)
+{
+	printf("%s\n", "Signout option executed.");
+
+	for (int k = 0; k < numUsers; k++)
+	{
+		if (strcmp(allUsers[k].username, username) == 0)
+		{
+			allUsers[k].isOnline = 0;
+			strcpy(bufferOut, "signout");
+			return;
 		}
 	}
 }
