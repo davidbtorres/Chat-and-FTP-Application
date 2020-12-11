@@ -24,7 +24,6 @@ int main(void)
 	socklen_t addressSize;
 	int isRunning = 1;
 
-
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (socketFD < 0)

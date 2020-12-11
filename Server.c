@@ -61,7 +61,6 @@ int main(void)
 	{			
 		printf("%s", "Awaiting client.\n");
 		numBytes = recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
-		printf("%s\n", "DLSKGJSLDKGJ");
 
 		if(numBytes < 0)
 		{
@@ -127,10 +126,26 @@ int main(void)
 						allUsers[k].clientAddr.sin_addr.s_addr = clientAddr.sin_addr.s_addr;
 						printf("%p", &clientAddr);
 						strcpy(bufferOut, "From Server: Successfully signed in.");
-
 					}
 				}
 			}
+		}
+
+		else if (strcmp(token, "signout") == 0)
+		{
+			printf("%s\n", "Signout option executed.");
+			token = strtok(NULL, delimiter);
+			printf("Token: %s\n", token);
+			
+			for (int k = 0; k < numUsers; k++)
+			{
+				if (strcmp(allUsers[k].username, token) == 0)
+				{
+					allUsers[k].isOnline = 0;
+				}
+			}
+			
+			strcpy(bufferOut, "From Server: Successfully signed out");
 		}
 
 		printf("Buffer: %s     Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
