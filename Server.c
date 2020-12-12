@@ -143,7 +143,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 				allUsers[k].clientAddr.sin_port = clientAddr->sin_port;
 				allUsers[k].clientAddr.sin_addr.s_addr = clientAddr->sin_addr.s_addr;
 				
-				strcpy(bufferOut, "From Server: Successfully signed in.");
+				strcpy(bufferOut, "1");
 			}
 		}
 	}

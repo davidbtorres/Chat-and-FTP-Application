@@ -62,15 +62,15 @@ int main(void)
 	  		}
 	  		else
 	  		{
-	  			printf("%s\n", "Sign in failed");
+	  			printf("%s\n", "ERROR: Sign in failed");
 	  		}
 	  	}
 	  	else if (strcmp(ans, "n") == 0)
 	  	{
 	  		formatCommand("register", username, password);
-	  		if(authenticateCommand(sizeof(serverAddr)))
+	  		if (authenticateCommand(sizeof(serverAddr)))
 	  		{
-	  			printf("%s\n", "successfully registered account");
+	  			printf("%s\n", "Successfully registered account\nPlease sign in");
 	  			formatCommand("signin", username, password);
 	  			if (authenticateCommand(sizeof(serverAddr)))
 	  			{
@@ -78,12 +78,12 @@ int main(void)
 	  			}
 	  			else
 	  			{
-	  				printf("%s\n", "Sign in failed");
+	  				printf("%s\n", "ERROR: Sign in failed");
 	  			}
 	  		}
 	  		else
 	  		{
-	  			printf("%s\n", "Failed to register account");
+	  			printf("%s\n", "ERROR: Failed to register account");
 	  			registerStatus = 1;
 	  		}
 	  	}
@@ -135,5 +135,6 @@ int authenticateCommand(socklen_t addressSize)
 	printf("%s\n", "Authenticating...");
 	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
 	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-	return (strcmp(buffer, "1"));
+	printf("%s\n", buffer);
+	return (strcmp(buffer, "1") == 0);
 }
