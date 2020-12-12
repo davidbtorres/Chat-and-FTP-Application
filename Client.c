@@ -18,12 +18,11 @@ Networking
 #define BUFFERSIZE 1024
 
 char buffer[BUFFERSIZE];
+int socketFD;
+struct sockaddr_in serverAddr;
 
 int main(void)
 {
-	int socketFD;
-	struct sockaddr_in serverAddr;
-	
 	socklen_t addressSize;
 	int isRunning = 1;
     char* token;
@@ -44,20 +43,20 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
+  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.9");
 
   	int registerStatus = 1;
+  	char ans[32];
   	while (registerStatus)
   	{
-  		char ans;
 	  	printf("%s\n", "Have you registered an account? [y/n]");
-	  	scanf("%c", &ans);
+	  	scanf("%s", ans);
 
   		registerStatus = 0;
-	  	if (ans == (char)'y')
+	  	if (strcmp(ans, "y") == 0)
 	  	{
 	  		formatCommand("signin", username, password);
-	  		if (authenticateCommand(&socketFD, (struct sockaddr_in*) &serverAddr, sizeof(serverAddr)))
+	  		if (authenticateCommand(sizeof(serverAddr)))
 	  		{
 	  			printf("%s\n", "Sign in successful");
 	  		}
@@ -66,14 +65,14 @@ int main(void)
 	  			printf("%s\n", "Sign in failed");
 	  		}
 	  	}
-	  	else if (ans == (char)'n')
+	  	else if (strcmp(ans, "n") == 0)
 	  	{
 	  		formatCommand("register", username, password);
-	  		if(authenticateCommand(&socketFD, (struct sockaddr_in*) &serverAddr, sizeof(serverAddr)))
+	  		if(authenticateCommand(sizeof(serverAddr)))
 	  		{
 	  			printf("%s\n", "successfully registered account");
 	  			formatCommand("signin", username, password);
-	  			if (authenticateCommand(&socketFD, (struct sockaddr_in*) &serverAddr, sizeof(serverAddr)))
+	  			if (authenticateCommand(sizeof(serverAddr)))
 	  			{
 	  				printf("%s\n", "Sign in successful");
 	  			}
@@ -81,7 +80,6 @@ int main(void)
 	  			{
 	  				printf("%s\n", "Sign in failed");
 	  			}
-
 	  		}
 	  		else
 	  		{
@@ -91,9 +89,8 @@ int main(void)
 	  	}
 	  	else
 	  	{
-	  		printf("%s\n", "Invalid input\nHave you registered an account? [y/n]");
+	  		printf("%s\n", "ERROR: Invalid input");
 	  		registerStatus = 1;
-	  		scanf("%s", &ans);
 	  	}
 	}
 
@@ -126,7 +123,6 @@ void formatCommand(char option[], char username[], char password[])
 	scanf("%s", username);
 	printf("%s\n", "Please enter a password");
 	scanf("%s", password);
-
 	strcpy(buffer, option);
 	strcat(buffer, ",");
 	strcat(buffer, username);
@@ -134,9 +130,10 @@ void formatCommand(char option[], char username[], char password[])
 	strcat(buffer, password);
 }
 
-int authenticateCommand(int* socketFD, struct sockaddr_in* serverAddr, socklen_t addressSize)
+int authenticateCommand(socklen_t addressSize)
 {
-	sendto(*socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
-	recvfrom(*socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+	printf("%s\n", "Authenticating...");
+	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
+	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 	return (strcmp(buffer, "1"));
 }
