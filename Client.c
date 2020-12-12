@@ -70,7 +70,7 @@ int main(void)
 	  		formatCommand("register", username, password);
 	  		if (authenticateCommand(sizeof(serverAddr)))
 	  		{
-	  			printf("%s\n", "Successfully registered account\nPlease sign in");
+	  			printf("%s\n", "Successfully registered account\n\nPlease sign in");
 	  			formatCommand("signin", username, password);
 	  			if (authenticateCommand(sizeof(serverAddr)))
 	  			{
@@ -119,10 +119,11 @@ int main(void)
 
 void formatCommand(char option[], char username[], char password[])
 {
-	printf("%s\n", "Please enter a username");
+	printf("%s", "Please enter a username: ");
 	scanf("%s", username);
-	printf("%s\n", "Please enter a password");
+	printf("\n%s", "Please enter a password: ");
 	scanf("%s", password);
+	printf("\n");
 	strcpy(buffer, option);
 	strcat(buffer, ",");
 	strcat(buffer, username);
@@ -135,6 +136,5 @@ int authenticateCommand(socklen_t addressSize)
 	printf("%s\n", "Authenticating...");
 	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
 	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-	printf("%s\n", buffer);
 	return (strcmp(buffer, "1") == 0);
 }
