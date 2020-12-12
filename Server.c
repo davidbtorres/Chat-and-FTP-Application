@@ -124,7 +124,7 @@ void reg(char password[], char username[])
 	allUsers[numUsers].isOnline = 0;
 	numUsers++;
 	
-	strcpy(bufferOut, "From Server: Successfully registered");
+	strcpy(bufferOut, "1");
 }
 
 void signin(char password[], char username[], struct sockaddr_in* clientAddr)

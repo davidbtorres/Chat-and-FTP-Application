@@ -31,4 +31,4 @@ Client.o: Client.c
 
 
 clean:
-	rm -f $(OBJS) $(OUT) $(OBJS1) $(OUT1)
+	rm -f $(OBJS) $(OUT0) $(OBJS1) $(OUT1)
