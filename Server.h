@@ -1,7 +1,6 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-
 struct user
 {
 	char username[32];
@@ -10,13 +9,10 @@ struct user
 	struct sockaddr_in clientAddr;
 };
 
-void serverGreeting();
-int userOnline(struct sockaddr_in clientAddr);
-int signup(char* username, char* password);
-int signin(char* username, char* password);
-void logout(char* username);
-static void option0(struct sockaddr_in* clientAddr); // List Users
-int option1(char*, ...); // Create new chat with specified users
-void option2(char* fielname, char*, ...); // File transfer
+void reg(char password[], char username[]);
+void signin(char password[], char username[], struct sockaddr_in* clientAddr);
+void signout(char username[]);
+void option0();
+int findUser(char username[]);
 
 #endif
