@@ -12,6 +12,7 @@ Networking
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <pthread.h>
 #include "Server.h"
 
 #define PORT 5000
@@ -76,6 +77,11 @@ int main(void)
 			option0(bufferOut, sizeof(bufferOut));
 		}
 
+		else if (strcmp(token, "1") == 0)
+		{
+			option1(strtok(NULL, delimiter));
+		}
+
 		else if (strcmp(token, "register") == 0)
 		{
 			reg(strtok(NULL, delimiter), strtok(NULL, delimiter));
@@ -112,6 +118,19 @@ void option0()
 			strcat(bufferOut, "\n");
 		}
 	}
+}
+
+void option1(char user[], ...)
+{
+	
+	printf("%s\n", "Option 1 was recieved.");
+	pthread_t thread;
+	pthread_create(thread, NULL, chat, (void*))
+}
+
+void *chat()
+{
+
 }
 
 void reg(char password[], char username[])

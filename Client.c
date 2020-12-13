@@ -96,6 +96,10 @@ int main(void)
 	  	}
 	}
 
+	/*
+	Precondition: The user is already signed in.
+	Functionality: This loop allows the user to access commands from the server. 
+	*/
     while (isRunning)
     {
     	printf("Enter message\n");

@@ -14,5 +14,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr);
 void signout(char username[]);
 void option0();
 int findUser(char username[]);
+void option1(char username[]);
+void chat(char username, char username[]);
 
 #endif
