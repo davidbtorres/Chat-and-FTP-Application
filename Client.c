@@ -12,6 +12,7 @@ Networking
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <pthread.h>
 #include "Client.h"
 
 #define PORT 5000
@@ -50,6 +51,9 @@ int main(void)
 	serverAddr.sin_port = htons(PORT);
   	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
 
+  	pthread_t thread;
+	pthread_create(&thread, NULL, chatListener, (void*)NULL);
+
 	/*
 	Precondition: The user is already signed in.
 	Functionality: This loop allows the user to access commands from the server. 
@@ -65,7 +69,7 @@ int main(void)
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
-    	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+    	// recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         token = strtok(buffer, delimiter);
         if(strcmp(token, "signin") == 0)
         {
@@ -84,4 +88,14 @@ int main(void)
     }
 
     close(socketFD);
+}
+
+void* chatListener()
+{
+	printf("%s\n", "I LISTEN");
+	while(1)
+	{
+		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+		printf("%s\n", buffer);
+	}
 }
