@@ -20,9 +20,11 @@ Networking
 
 char buffer[BUFFERSIZE];
 char bufferOut[BUFFERSIZE];
+char bufferChat[BUFFERSIZE];
 int socketFD;
 struct sockaddr_in serverAddr;
 socklen_t addressSize;
+int chatFlag = 0;
 
 const char delimiter[2] = ",";
 
@@ -51,8 +53,9 @@ int main(void)
 	serverAddr.sin_port = htons(PORT);
   	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
 
-  	pthread_t thread;
-	pthread_create(&thread, NULL, chatListener, (void*)NULL);
+  	pthread_t thread1, thread2;
+  	pthread_create(&thread1, NULL, commandHandler, (void*)NULL);
+	pthread_create(&thread2, NULL, chatListener, (void*)NULL);
 
 	/*
 	Precondition: The user is already signed in.
@@ -69,8 +72,14 @@ int main(void)
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
-    	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+    	//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+    	while (!chatFlag)
+    	{
+    		continue;
+    	}
+    	chatFlag = 0;
         token = strtok(buffer, delimiter);
+        printf("%s\n", token);
         if(strcmp(token, "signin") == 0)
         {
         	token = strtok(NULL, delimiter);
@@ -108,7 +117,13 @@ void* chatListener()
 	{
 		printf("%s\n", "I LISTEN");
 		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+		chatFlag = 1;
 		// signal to continue
 		printf("%s\n", buffer);
 	}
+}
+
+void* commandHandler()
+{
+
 }

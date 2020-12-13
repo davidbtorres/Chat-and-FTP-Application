@@ -21,7 +21,7 @@ Server: $(OBJS0) $(LFLAGS)
 	$(CC) -g $(OBJS0) -o $(OUT0)
 
 Client: $(OBJS1) $(LFLAGS)
-	$(CC) -g $(OBJS1) -o $(OUT1)
+	$(CC) -pthread -g $(OBJS1) -o $(OUT1)
 
 Server.o: Server.c
 	$(CC) $(FLAGS) Server.c
