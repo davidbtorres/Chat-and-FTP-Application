@@ -17,8 +17,10 @@ Networking
 
 #define PORT 5000
 #define BUFFERSIZE 1024
+#define MSG_CONFIRM 0 
+#define MSG_WAITALL 0
 
-struct user allUsers[100];
+struct User allUsers[100];
 int numUsers = 0;
 char buffer[BUFFERSIZE];
 char bufferOut[BUFFERSIZE];
@@ -74,12 +76,12 @@ int main(void)
 
 		if (strcmp(token, "0") == 0)
 		{
-			option0(bufferOut, sizeof(bufferOut));
+			option0();
 		}
 
 		else if (strcmp(token, "1") == 0)
 		{
-			option1(strtok(NULL, delimiter));
+			option1(strtok(NULL, delimiter), strtok(NULL, delimiter));
 		}
 
 		else if (strcmp(token, "register") == 0)
@@ -95,6 +97,10 @@ int main(void)
 		else if (strcmp(token, "signout") == 0)
 		{
 			signout(strtok(NULL, delimiter));
+		}
+		else if()
+		{
+
 		}
 
 		printf("Buffer: %s Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
@@ -120,17 +126,40 @@ void option0()
 	}
 }
 
-void option1(char user[], ...)
+void option1(char user1[], char user2[])
 {
-	
 	printf("%s\n", "Option 1 was recieved.");
-	pthread_t thread;
-	pthread_create(thread, NULL, chat, (void*))
+
+	int userOneStatus = findUser(user1);
+	int userTwoStatus = findUser(user2);
+
+	if (userOneStatus && userTwoStatus)
+	{
+       struct Chat chat;
+       chat.username1 = user1;
+       chat.username2 = user2;
+       chat.userAddr1 = allUsers[userOneStatus].clientAddr;
+       chat.userAddr2 = allUsers[userTwoStatus].clientAddr;
+	}
+	else
+	{
+       strcpy(bufferOut, "chat,0");
+       return;
+	}
+	strcpy(bufferOut, "chat,1");
+
+	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &chat.userAddr1, sizeof(chat.userAddr1));
+	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &userAddr1, &addressSize);
+	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &chat.userAddr2, sizeof(chat.userAddr2));
+
+
+ //    pthread_t thread;
+	// pthread_create(thread, NULL, chatFunction, (void*) chat);
 }
 
-void *chat()
+void *chatFunction()
 {
-
+    
 }
 
 void reg(char password[], char username[])

@@ -16,6 +16,8 @@ Networking
 
 #define PORT 5000
 #define BUFFERSIZE 1024
+#define MSG_CONFIRM 0
+#define MSG_WAITALL 0
 
 char buffer[BUFFERSIZE];
 int socketFD;
@@ -112,10 +114,21 @@ int main(void)
 
         if (strcmp(token, "signout") == 0)
         {
-
             printf("From server: Signout successful\n");
             break;
         }
+        else if (strcmp(token, "chat") == 0)
+        {
+        	token = strtok(NULL, delimiter);
+        	if (strcmp(token, "1") == 0)
+        	{
+        		// create the thread from this thread send to server
+        		// invoke new terminal
+        		// invoke chat function (send command to server)
+
+        	}
+        }
+
 
     	printf("%s\n", buffer);
     }
