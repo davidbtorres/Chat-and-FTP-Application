@@ -16,22 +16,25 @@ Networking
 
 #define PORT 5000
 #define BUFFERSIZE 1024
-#define MSG_CONFIRM 0
-#define MSG_WAITALL 0
 
 char buffer[BUFFERSIZE];
+char bufferOut[BUFFERSIZE];
 int socketFD;
 struct sockaddr_in serverAddr;
+
+const char delimiter[2] = ",";
 
 int main(void)
 {
 	socklen_t addressSize;
 	int isRunning = 1;
     char* token;
-    const char delimiter[2] = ",";
 
     char username[32];
     char password[32];
+
+    strcpy(username, "nsi");
+    printf("DEBUG: username at beginning of client.c: %s\n", username);
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -45,12 +48,14 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-  	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
+  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
 
+  	/*
   	int registerStatus = 1;
   	char ans[32];
   	while (registerStatus)
   	{
+  		strcpy(bufferOut, "nsi,");
 	  	printf("%s\n", "Have you registered an account? [y/n]");
 	  	scanf("%s", ans);
 
@@ -82,7 +87,6 @@ int main(void)
 	  			{
 	  				printf("%s\n", "ERROR: Sign in failed");
 	  				registerStatus = 1;
-
 	  			}
 	  		}
 	  		else
@@ -97,6 +101,7 @@ int main(void)
 	  		registerStatus = 1;
 	  	}
 	}
+	*/
 
 	/*
 	Precondition: The user is already signed in.
@@ -104,10 +109,17 @@ int main(void)
 	*/
     while (isRunning)
     {
-    	printf("Enter message\n");
-    	scanf("%s", buffer);
-    	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
-    	printf("Message sent\n");
+    	printf("DEBUG: username at beginning of main loop: %s\n", username);
+    	printf("%s", "Command: ");
+    	strcpy(bufferOut, username);
+    	printf("DEBUG: bufferOut after setting it to username: %s\n", bufferOut);
+    	strcat(bufferOut, delimiter);
+    	char ye[32];
+    	scanf("%s", ye);
+    	strcat(bufferOut, ye);
+    	printf("DEBUG: buffer at before its sent to server: %s\n", bufferOut);
+    	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
     	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         token = strtok(buffer, delimiter);
@@ -143,17 +155,18 @@ void formatCommand(char option[], char username[], char password[])
 	printf("\n%s", "Please enter a password: ");
 	scanf("%s", password);
 	printf("\n");
-	strcpy(buffer, option);
-	strcat(buffer, ",");
-	strcat(buffer, username);
-	strcat(buffer, ",");
-	strcat(buffer, password);
+	strcat(bufferOut, option);
+	strcat(bufferOut, delimiter);
+	strcat(bufferOut, username);
+	strcat(bufferOut, delimiter);
+	strcat(bufferOut, password);
+	strcat(bufferOut, delimiter);
 }
 
 int authenticateCommand(socklen_t addressSize)
 {
 	printf("%s\n", "Authenticating...");
-	sendto(socketFD, buffer, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
+	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
 	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 	return (strcmp(buffer, "1") == 0);
 }
