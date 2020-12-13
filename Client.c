@@ -21,12 +21,12 @@ char buffer[BUFFERSIZE];
 char bufferOut[BUFFERSIZE];
 int socketFD;
 struct sockaddr_in serverAddr;
+socklen_t addressSize;
 
 const char delimiter[2] = ",";
 
 int main(void)
 {
-	socklen_t addressSize;
 	int isRunning = 1;
     char* token;
 
@@ -49,59 +49,6 @@ int main(void)
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
   	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
-
-  	/*
-  	int registerStatus = 1;
-  	char ans[32];
-  	while (registerStatus)
-  	{
-  		strcpy(bufferOut, "nsi,");
-	  	printf("%s\n", "Have you registered an account? [y/n]");
-	  	scanf("%s", ans);
-
-  		registerStatus = 0;
-	  	if (strcmp(ans, "y") == 0)
-	  	{
-	  		formatCommand("signin", username, password);
-	  		if (authenticateCommand(sizeof(serverAddr)))
-	  		{
-	  			printf("%s\n", "Sign in successful");
-	  		}
-	  		else
-	  		{
-	  			printf("%s\n", "ERROR: Sign in failed");
-	  		}
-	  	}
-	  	else if (strcmp(ans, "n") == 0)
-	  	{
-	  		formatCommand("register", username, password);
-	  		if (authenticateCommand(sizeof(serverAddr)))
-	  		{
-	  			printf("%s\n", "Successfully registered account\n\nPlease sign in");
-	  			formatCommand("signin", username, password);
-	  			if (authenticateCommand(sizeof(serverAddr)))
-	  			{
-	  				printf("%s\n", "Sign in successful");
-	  			}
-	  			else
-	  			{
-	  				printf("%s\n", "ERROR: Sign in failed");
-	  				registerStatus = 1;
-	  			}
-	  		}
-	  		else
-	  		{
-	  			printf("%s\n", "ERROR: Failed to register account");
-	  			registerStatus = 1;
-	  		}
-	  	}
-	  	else
-	  	{
-	  		printf("%s\n", "ERROR: Invalid input");
-	  		registerStatus = 1;
-	  	}
-	}
-	*/
 
 	/*
 	Precondition: The user is already signed in.
@@ -132,44 +79,9 @@ int main(void)
             printf("From server: Signout successful\n");
             break;
         }
-/*        else if (strcmp(token, "chat") == 0)
-        {
-        	token = strtok(NULL, delimiter);
-        	if (strcmp(token, "1") == 0)
-        	{
-        		// create the thread from this thread send to server
-        		// invoke new terminal
-        		// invoke chat function (send command to server)
-
-        	}
-        }*/
-
 
     	printf("%s\n", buffer);
     }
 
     close(socketFD);
-}
-
-void formatCommand(char option[], char username[], char password[])
-{
-	printf("%s", "Please enter a username: ");
-	scanf("%s", username);
-	printf("\n%s", "Please enter a password: ");
-	scanf("%s", password);
-	printf("\n");
-	strcat(bufferOut, option);
-	strcat(bufferOut, delimiter);
-	strcat(bufferOut, username);
-	strcat(bufferOut, delimiter);
-	strcat(bufferOut, password);
-	strcat(bufferOut, delimiter);
-}
-
-int authenticateCommand(socklen_t addressSize)
-{
-	printf("%s\n", "Authenticating...");
-	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, addressSize);
-	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-	return (strcmp(buffer, "1") == 0);
 }
