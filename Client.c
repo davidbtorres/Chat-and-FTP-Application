@@ -33,7 +33,7 @@ int main(void)
     char username[32];
     char password[32];
 
-    strcpy(username, "nsi");
+    strcpy(username, "NOTSIGNEDIN");
     printf("DEBUG: username at beginning of client.c: %s\n", username);
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
@@ -109,27 +109,30 @@ int main(void)
 	*/
     while (isRunning)
     {
-    	printf("DEBUG: username at beginning of main loop: %s\n", username);
     	printf("%s", "Command: ");
     	strcpy(bufferOut, username);
-    	printf("DEBUG: bufferOut after setting it to username: %s\n", bufferOut);
     	strcat(bufferOut, delimiter);
-    	char ye[32];
-    	scanf("%s", ye);
-    	strcat(bufferOut, ye);
-    	printf("DEBUG: buffer at before its sent to server: %s\n", bufferOut);
+    	char nextCommand[32];
+    	scanf("%s", nextCommand);
+    	strcat(bufferOut, nextCommand);
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
     	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         token = strtok(buffer, delimiter);
+        if(strcmp(token, "signin") == 0)
+        {
+        	token = strtok(NULL, delimiter);
+        	strcpy(username, token);
+        	printf("Signed to profile: %s\n", username);
+        }
 
         if (strcmp(token, "signout") == 0)
         {
             printf("From server: Signout successful\n");
             break;
         }
-        else if (strcmp(token, "chat") == 0)
+/*        else if (strcmp(token, "chat") == 0)
         {
         	token = strtok(NULL, delimiter);
         	if (strcmp(token, "1") == 0)
@@ -139,7 +142,7 @@ int main(void)
         		// invoke chat function (send command to server)
 
         	}
-        }
+        }*/
 
 
     	printf("%s\n", buffer);

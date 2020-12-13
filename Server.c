@@ -59,7 +59,7 @@ int main(void)
 
 	addressSize = sizeof(clientAddr);
 
-	char* clientContext;
+	char clientContext[32];
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client...\n");
@@ -72,13 +72,12 @@ int main(void)
 		printf("DEBUG: buffer at beginning of server loop: %s\n", buffer);
 		strcpy(bufferOut, buffer);
 
-		clientContext = strtok(buffer, delimiter);
-		printf("DEBUG: token of buffer, delim at beginning of server loop: %s\n", strtok(buffer, delimiter));
-		printf("DEBUG: clientContext at beginning of server loop: %s\n", clientContext);
+		token = strtok(buffer, delimiter);
+		strcpy(clientContext, token);
 		token = strtok(NULL, delimiter);
 		printf("Token: %s\n", token);
 
-		if (strcmp(clientContext, "nsi") == 0)
+		if (strcmp(clientContext, "NOTSIGNEDIN") == 0)
 		{
 			if (strcmp(token, "register") == 0)
 			{
@@ -178,7 +177,7 @@ void reg(char password[], char username[])
 	allUsers[numUsers].isOnline = 0;
 	numUsers++;
 	
-	strcpy(bufferOut, "1");
+	strcpy(bufferOut, "register");
 }
 
 void signin(char password[], char username[], struct sockaddr_in* clientAddr)
@@ -197,7 +196,8 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 				allUsers[k].clientAddr.sin_port = clientAddr->sin_port;
 				allUsers[k].clientAddr.sin_addr.s_addr = clientAddr->sin_addr.s_addr;
 				
-				strcpy(bufferOut, "1");
+				strcpy(bufferOut, "signin,");
+				strcat(bufferOut, username);
 			}
 		}
 	}
