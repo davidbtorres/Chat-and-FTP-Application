@@ -25,10 +25,11 @@ char bufferOut[BUFFERSIZE];
 
 int socketFD;
 socklen_t addressSize;
+struct sockaddr_in serverAddr, clientAddr;
+
 
 int main(void)
 {
-	struct sockaddr_in serverAddr, clientAddr;
 	
 	int numBytes;
 	
@@ -49,7 +50,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
+	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
@@ -98,7 +99,7 @@ int main(void)
 
 			else if (strcmp(token, "1") == 0)
 			{
-				option1(strtok(NULL, delimiter), strtok(NULL, delimiter));
+				option1(strtok(NULL, delimiter));
 			}
 
 			else if (strcmp(token, "signout") == 0)
@@ -130,41 +131,25 @@ void option0()
 	}
 }
 
-void option1(char user1[], char user2[])
+void option1(char username[])
 {
-	struct Chat chat;
-
 	printf("%s\n", "Option 1 was recieved.");
 
-	int userOneStatus = findUser(user1);
-	int userTwoStatus = findUser(user2);
+	int userStatus = findUser(username);
 
-	if (userOneStatus && userTwoStatus)
+	if (userStatus != -1)
 	{
-       strcpy(chat.username1, user1);
-       strcpy(chat.username2, user2);
-       chat.userAddr1 = allUsers[userOneStatus].clientAddr;
-       chat.userAddr2 = allUsers[userTwoStatus].clientAddr;
+		strcpy(bufferOut, "option1");
+		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
+		recvfrom(socketFD, bufferOut, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &allUsers[userStatus].clientAddr, sizeof(allUsers[userStatus].clientAddr));
 	}
 	else
 	{
-       strcpy(bufferOut, "chat,0");
-       return;
+		strcpy(bufferOut, "0");
 	}
-	strcpy(bufferOut, "chat,1");
 
-	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &chat.userAddr1, sizeof(chat.userAddr1));
-	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &chat.userAddr1, &addressSize);
-	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &chat.userAddr2, sizeof(chat.userAddr2));
-
-
- //    pthread_t thread;
-	// pthread_create(thread, NULL, chatFunction, (void*) chat);
-}
-
-void *chatHandler()
-{
-    return 0;
+	strcpy(bufferOut, "Message sent");
 }
 
 void reg(char password[], char username[])

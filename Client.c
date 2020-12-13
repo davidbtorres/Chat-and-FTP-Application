@@ -49,7 +49,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
+  	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
 
   	pthread_t thread;
 	pthread_create(&thread, NULL, chatListener, (void*)NULL);
@@ -69,7 +69,7 @@ int main(void)
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
-    	// recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+    	recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         token = strtok(buffer, delimiter);
         if(strcmp(token, "signin") == 0)
         {
@@ -78,10 +78,22 @@ int main(void)
         	printf("Signed to profile: %s\n", username);
         }
 
-        if (strcmp(token, "signout") == 0)
+        else if (strcmp(token, "signout") == 0)
         {
             printf("From server: Signout successful\n");
             break;
+        }
+
+        else if (strcmp(token, "option1") == 0)
+        {
+        	printf("%s\n", "Write your message:");
+        	scanf("%s", bufferOut);
+    		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
+    		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+        }
+        else
+        {
+        	printf("ERROR: Command Failed");
         }
 
     	printf("%s\n", buffer);
@@ -92,10 +104,11 @@ int main(void)
 
 void* chatListener()
 {
-	printf("%s\n", "I LISTEN");
-	while(1)
+	while (1)
 	{
+		printf("%s\n", "I LISTEN");
 		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
+		// signal to continue
 		printf("%s\n", buffer);
 	}
 }
