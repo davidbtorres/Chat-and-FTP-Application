@@ -43,7 +43,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.9");
+  	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
 
   	int registerStatus = 1;
   	char ans[32];
@@ -79,6 +79,8 @@ int main(void)
 	  			else
 	  			{
 	  				printf("%s\n", "ERROR: Sign in failed");
+	  				registerStatus = 1;
+
 	  			}
 	  		}
 	  		else

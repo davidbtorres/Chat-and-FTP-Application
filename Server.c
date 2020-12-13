@@ -46,7 +46,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
