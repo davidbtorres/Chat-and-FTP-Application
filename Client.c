@@ -41,6 +41,12 @@ const char delimiter[2] = ",";
 
 int main(int argc, char *argv[])
 {
+	if(argc < 3)
+	{
+		printf("Invalid arguments, correct format is:\n./Client <IP> <PORT>\n");
+		return 0;
+	}
+
     /*
     * user is connected to the server
     */

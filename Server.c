@@ -45,6 +45,12 @@ int main(int argc, char *argv[])
 	 * bind client to user
 	 */
 
+	if(argc < 3)
+	{
+		printf("Invalid arguments, correct format is:\n./Server <IP> <PORT>\n");
+		return 0;
+	}
+
 	int numBytes;
 	
 	char* token;
