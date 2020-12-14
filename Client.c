@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
     // char password[32];
 
     strcpy(username, "NOTSIGNEDIN");
-    //printf("DEBUG: username at beginning of client.c: %s\n", username);
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -100,7 +99,6 @@ int main(int argc, char *argv[])
     	chatFlag = 0;
     	strcpy(bufferOut, buffer);
         token = strtok(buffer, delimiter);
-        // printf("%s\n", token);
         if(strcmp(token, "signin") == 0)
         {
         	token = strtok(NULL, delimiter);
@@ -121,7 +119,6 @@ int main(int argc, char *argv[])
 
         else if (strcmp(token, "option0") == 0)
         {
-    		//printf("%s\n", "option0 selected");
     		printf("%s\n", bufferOut);
         }//end of else if
 
@@ -160,7 +157,6 @@ void* chatListener()
 	{
 		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 		chatFlag = 1;
-		// signal to continue
 		printf("%s\n", buffer);
 	}//End of While
 }//end of ChatListener
