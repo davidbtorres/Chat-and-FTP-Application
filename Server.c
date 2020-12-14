@@ -12,21 +12,25 @@ Networking
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <pthread.h>
 #include "Server.h"
 
 #define PORT 5000
 #define BUFFERSIZE 1024
 
-struct user allUsers[100];
+struct User allUsers[100];
 int numUsers = 0;
 char buffer[BUFFERSIZE];
 char bufferOut[BUFFERSIZE];
 
+int socketFD;
+socklen_t addressSize;
+struct sockaddr_in serverAddr, clientAddr;
+
+
 int main(void)
 {
-	int socketFD;
-	struct sockaddr_in serverAddr, clientAddr;
-	socklen_t addressSize;
+	
 	int numBytes;
 	
 	char* token;
@@ -46,7 +50,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
+	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
@@ -56,6 +60,7 @@ int main(void)
 
 	addressSize = sizeof(clientAddr);
 
+	char clientContext[32];
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client...\n");
@@ -65,30 +70,47 @@ int main(void)
 		{
 			perror("Unable to recieve message");
 		}
-		
+		printf("DEBUG: buffer at beginning of server loop: %s\n", buffer);
 		strcpy(bufferOut, buffer);
 
 		token = strtok(buffer, delimiter);
+		strcpy(clientContext, token);
+		token = strtok(NULL, delimiter);
 		printf("Token: %s\n", token);
 
-		if (strcmp(token, "0") == 0)
+		if (strcmp(clientContext, "NOTSIGNEDIN") == 0)
 		{
-			option0(bufferOut, sizeof(bufferOut));
-		}
+			if (strcmp(token, "register") == 0)
+			{
+				reg(strtok(NULL, delimiter), strtok(NULL, delimiter));
+			}
 
-		else if (strcmp(token, "register") == 0)
-		{
-			reg(strtok(NULL, delimiter), strtok(NULL, delimiter));
+			else if (strcmp(token, "signin") == 0)
+			{
+				signin(strtok(NULL, delimiter), strtok(NULL, delimiter), (struct sockaddr_in*) &clientAddr);
+			}
 		}
-
-		else if (strcmp(token, "signin") == 0)
+		else
 		{
-			signin(strtok(NULL, delimiter), strtok(NULL, delimiter), (struct sockaddr_in*) &clientAddr);
-		}
+			if (strcmp(token, "0") == 0)
+			{
+				option0();
+			}
 
-		else if (strcmp(token, "signout") == 0)
-		{
-			signout(strtok(NULL, delimiter));
+			else if (strcmp(token, "1") == 0)
+			{
+				option1(strtok(NULL, delimiter));
+			}
+
+			else if (strcmp(token, "signout") == 0)
+			{
+				signout(clientContext);
+			}
+
+			else if (strcmp(token, "refresh") == 0)
+			{
+				refresh();
+			}
 		}
 
 		printf("Buffer: %s Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
@@ -102,7 +124,7 @@ void option0()
 {
 	printf("%s\n", "Option 0 was recieved.");
 	memset(bufferOut, '\0', sizeof(bufferOut));
-	strcpy(bufferOut, "List of users online:\n");
+	strcpy(bufferOut, "option0,List of users online:\n");
 
 	for (int i = 0; i < numUsers; i++)
 	{
@@ -112,6 +134,27 @@ void option0()
 			strcat(bufferOut, "\n");
 		}
 	}
+}
+
+void option1(char username[])
+{
+	printf("%s\n", "Option 1 was recieved.");
+
+	int userStatus = findUser(username);
+
+	if (userStatus != -1)
+	{
+		strcpy(bufferOut, "option1");
+		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &clientAddr, sizeof(clientAddr));
+		recvfrom(socketFD, bufferOut, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &clientAddr, &addressSize);
+		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &allUsers[userStatus].clientAddr, sizeof(allUsers[userStatus].clientAddr));
+	}
+	else
+	{
+		strcpy(bufferOut, "0");
+	}
+
+	strcpy(bufferOut, "Message sent");
 }
 
 void reg(char password[], char username[])
@@ -124,7 +167,7 @@ void reg(char password[], char username[])
 	allUsers[numUsers].isOnline = 0;
 	numUsers++;
 	
-	strcpy(bufferOut, "1");
+	strcpy(bufferOut, "register");
 }
 
 void signin(char password[], char username[], struct sockaddr_in* clientAddr)
@@ -143,7 +186,8 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 				allUsers[k].clientAddr.sin_port = clientAddr->sin_port;
 				allUsers[k].clientAddr.sin_addr.s_addr = clientAddr->sin_addr.s_addr;
 				
-				strcpy(bufferOut, "1");
+				strcpy(bufferOut, "signin,");
+				strcat(bufferOut, username);
 			}
 		}
 	}
@@ -152,6 +196,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 void signout(char username[])
 {
 	printf("%s\n", "Signout option executed.");
+	printf("clientContext/username: %s\n", username);
 
 	for (int k = 0; k < numUsers; k++)
 	{
@@ -178,4 +223,10 @@ int findUser(char username[])
 	}
 
 	return result;
+}
+
+void refresh()
+{
+	strcpy(bufferOut, "refresh");
+	return;
 }

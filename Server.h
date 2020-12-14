@@ -1,7 +1,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-struct user
+struct User
 {
 	char username[32];
 	char password[32];
@@ -14,5 +14,7 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr);
 void signout(char username[]);
 void option0();
 int findUser(char username[]);
+void option1(char username[]);
+void refresh();
 
 #endif
