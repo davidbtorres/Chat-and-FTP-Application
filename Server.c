@@ -44,8 +44,6 @@ int main(int argc, char *argv[])
 	/*
 	 * bind client to user
 	 */
-	char server_IPAddress = argv[0]; 
-	char server_portNumber = argv[1];
 
 	int numBytes;
 	
@@ -65,8 +63,8 @@ int main(int argc, char *argv[])
 	memset(&clientAddr, 0, sizeof(clientAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(server_portNumber);
-	serverAddr.sin_addr.s_addr = inet_addr("server_IPAddress");
+	serverAddr.sin_port = htons(atoi(argv[2]));
+	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)

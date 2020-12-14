@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
     /*
     * user is connected to the server
     */
-    char server_IPAddress = argv[0]; 
-    char server_portNumber = argv[1];
+    //char* server_IPAddress = argv[0]; 
+    //int server_portNumber = htons(atoi(argv[2]));
 	int isRunning = 1;
     char* token;
 
     char username[32];
-    char password[32];
+    // char password[32];
 
     strcpy(username, "NOTSIGNEDIN");
     //printf("DEBUG: username at beginning of client.c: %s\n", username);
@@ -66,13 +66,11 @@ int main(int argc, char *argv[])
 	memset(&serverAddr, 0, sizeof(serverAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(server_portNumber);
-  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
-  	serverAddr.sin_addr.s_addr = inet_addr(server_IPAddress);
+	serverAddr.sin_port = htons(atoi(argv[2]));
+  	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
-  	pthread_t thread1, thread2;
-  	pthread_create(&thread1, NULL, commandHandler, (void*)NULL);
-	pthread_create(&thread2, NULL, chatListener, (void*)NULL);
+  	pthread_t thread;
+	pthread_create(&thread, NULL, chatListener, (void*)NULL);
 
 	/*
 	Precondition: The user is already signed in.
