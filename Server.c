@@ -50,7 +50,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
+	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
@@ -106,6 +106,11 @@ int main(void)
 			{
 				signout(clientContext);
 			}
+
+			else if (strcmp(token, "refresh") == 0)
+			{
+				refresh();
+			}
 		}
 
 		printf("Buffer: %s Recieved from: %p\n", bufferOut, &clientAddr.sin_addr);
@@ -119,7 +124,7 @@ void option0()
 {
 	printf("%s\n", "Option 0 was recieved.");
 	memset(bufferOut, '\0', sizeof(bufferOut));
-	strcpy(bufferOut, "List of users online:\n");
+	strcpy(bufferOut, "option0,List of users online:\n");
 
 	for (int i = 0; i < numUsers; i++)
 	{
@@ -218,4 +223,10 @@ int findUser(char username[])
 	}
 
 	return result;
+}
+
+void refresh()
+{
+	strcpy(bufferOut, "refresh");
+	return;
 }

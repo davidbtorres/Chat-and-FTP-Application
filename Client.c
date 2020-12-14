@@ -51,7 +51,7 @@ int main(void)
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-  	serverAddr.sin_addr.s_addr = inet_addr("10.0.0.40");
+  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
 
   	pthread_t thread1, thread2;
   	pthread_create(&thread1, NULL, commandHandler, (void*)NULL);
@@ -78,6 +78,7 @@ int main(void)
     		continue;
     	}
     	chatFlag = 0;
+    	strcpy(bufferOut, buffer);
         token = strtok(buffer, delimiter);
         printf("%s\n", token);
         if(strcmp(token, "signin") == 0)
@@ -87,10 +88,21 @@ int main(void)
         	printf("Signed to profile: %s\n", username);
         }
 
+        else if(strcmp(token, "register") == 0)
+        {
+        	printf("%s\n", "From server: register successful");
+        }
+
         else if (strcmp(token, "signout") == 0)
         {
             printf("From server: Signout successful\n");
             break;
+        }
+
+        else if (strcmp(token, "option0") == 0)
+        {
+    		printf("%s\n", "option0 selected");
+    		printf("%s\n", bufferOut);
         }
 
         else if (strcmp(token, "option1") == 0)
@@ -98,14 +110,21 @@ int main(void)
         	printf("%s\n", "Write your message:");
         	scanf("%s", bufferOut);
     		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
-    		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-        }
-        else
-        {
-        	printf("ERROR: Command Failed");
+    		//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         }
 
-    	printf("%s\n", buffer);
+        else if (strcmp(token, "refresh") == 0)
+        {
+        	printf("%s\n", "refreshed messages");
+        }
+
+        else
+        {
+        	printf("ERROR: Command Failed\n");
+        }
+
+
+
     }
 
     close(socketFD);
@@ -115,7 +134,6 @@ void* chatListener()
 {
 	while (1)
 	{
-		printf("%s\n", "I LISTEN");
 		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 		chatFlag = 1;
 		// signal to continue
