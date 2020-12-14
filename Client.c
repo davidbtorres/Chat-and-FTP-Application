@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     char password[32];
 
     strcpy(username, "NOTSIGNEDIN");
-    printf("DEBUG: username at beginning of client.c: %s\n", username);
+    //printf("DEBUG: username at beginning of client.c: %s\n", username);
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
-    	//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
     	while (!chatFlag)
     	{
     		continue;
@@ -97,7 +96,7 @@ int main(int argc, char *argv[])
     	chatFlag = 0;
     	strcpy(bufferOut, buffer);
         token = strtok(buffer, delimiter);
-        printf("%s\n", token);
+        // printf("%s\n", token);
         if(strcmp(token, "signin") == 0)
         {
         	token = strtok(NULL, delimiter);
@@ -118,7 +117,7 @@ int main(int argc, char *argv[])
 
         else if (strcmp(token, "option0") == 0)
         {
-    		printf("%s\n", "option0 selected");
+    		//printf("%s\n", "option0 selected");
     		printf("%s\n", bufferOut);
         }//end of else if
 
@@ -127,7 +126,6 @@ int main(int argc, char *argv[])
         	printf("%s\n", "Write your message:");
         	scanf("%s", bufferOut);
     		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
-    		//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         }//end of else if
 
         else if (strcmp(token, "refresh") == 0)
