@@ -57,52 +57,66 @@ Note:
 Example Execution:
 -------------------------------------------------------------
 ./Client
-Command: register,omar,123
+Command: register,user2,psswd
 Message sent
 register
 From server: register successful
-Command: signin,omar,123
+Command: signin,user2,psswd
 Message sent
-signin,omar
-Signed to profile: omar
+signin,user2
+Signed to profile: user2
+Command: <user_message>
+
+
+-------------------------------------------------------------
+./Client
+Command: register,user1,psswd
+Message sent
+register
+From server: register successful
+Command: signin,user1,psswd
+Message sent
+signin,user1
+Signed to profile: user1
 Command: 0
 Message sent
 option0,List of users online:
-david
-omar
+user2
+user1
 
 option0,List of users online:
-david
-omar
+user2
+user1
 
-Command: 1,david
+Command: 1,user2
 Message sent
 option1
 Write your message:
-hellooooo
+<user_message>
 Command: Message sent
 
 
 -------------------------------------------------------------
+
 ./Server
 Awaiting client...
 
 Awaiting client...
 Buffer: register Recieved from: 
 Awaiting client...
-Buffer: signin,david Recieved from: 
+Buffer: signin,user2 Recieved from: 
 Awaiting client...
 Buffer: option0,List of users online:
-david
+user2
  Recieved from: 
 Awaiting client...
 Buffer: register Recieved from: 
 Awaiting client...
-Buffer: signin,omar Recieved from: 
+Buffer: signin,user1 Recieved from: 
 Awaiting client...
 Buffer: option0,List of users online:
-david
-omar
+user2
+user1
  Recieved from: 
 Awaiting client...
 Buffer: Message sent Recieved from: 
