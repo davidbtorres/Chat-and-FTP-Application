@@ -1,6 +1,17 @@
 /*
-Project 2
-Networking
+ * CS 484: Networking
+ * Porject 2: Chat Application 
+ * 
+ * Group Member: 
+ *  Omar Navarro 
+ *  David Torres 
+ *  Anaira Quezada
+ *  Anissa Valenzuela
+ * 
+ * Purpose: 
+ * Client function with UDP protocol
+ * Client -> Server
+ * Client.c executes after Server.c function
 */
 
 #include <sys/socket.h>
@@ -28,8 +39,13 @@ int chatFlag = 0;
 
 const char delimiter[2] = ",";
 
-int main(void)
+int main(int argc, char *argv[])
 {
+    /*
+    * user is connected to the server
+    */
+    char server_IPAddress = argv[0]; 
+    char server_portNumber = argv[1];
 	int isRunning = 1;
     char* token;
 
@@ -45,13 +61,14 @@ int main(void)
 	{
 		perror("Could not create socket.");
 		exit(1);
-	}
+	}//end of if
 
 	memset(&serverAddr, 0, sizeof(serverAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(PORT);
+	serverAddr.sin_port = htons(server_portNumber);
   	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
+  	serverAddr.sin_addr.s_addr = inet_addr(server_IPAddress);
 
   	pthread_t thread1, thread2;
   	pthread_create(&thread1, NULL, commandHandler, (void*)NULL);
@@ -76,7 +93,7 @@ int main(void)
     	while (!chatFlag)
     	{
     		continue;
-    	}
+    	}//end of while
     	chatFlag = 0;
     	strcpy(bufferOut, buffer);
         token = strtok(buffer, delimiter);
@@ -86,24 +103,24 @@ int main(void)
         	token = strtok(NULL, delimiter);
         	strcpy(username, token);
         	printf("Signed to profile: %s\n", username);
-        }
+        }//end of if
 
         else if(strcmp(token, "register") == 0)
         {
         	printf("%s\n", "From server: register successful");
-        }
+        }//end of else if
 
         else if (strcmp(token, "signout") == 0)
         {
             printf("From server: Signout successful\n");
             break;
-        }
+        }//end of else if
 
         else if (strcmp(token, "option0") == 0)
         {
     		printf("%s\n", "option0 selected");
     		printf("%s\n", bufferOut);
-        }
+        }//end of else if
 
         else if (strcmp(token, "option1") == 0)
         {
@@ -111,25 +128,30 @@ int main(void)
         	scanf("%s", bufferOut);
     		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     		//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
-        }
+        }//end of else if
 
         else if (strcmp(token, "refresh") == 0)
         {
         	printf("%s\n", "refreshed messages");
-        }
+        }//end of else if
 
         else
         {
         	printf("ERROR: Command Failed\n");
-        }
+        }//end of else
 
 
 
-    }
+    }//end of while
 
     close(socketFD);
-}
+}//end of main 
 
+/*
+ * chatListener: 
+ * Monitors the chat and will receive what is in the buffer
+ * 
+ */
 void* chatListener()
 {
 	while (1)
@@ -138,10 +160,6 @@ void* chatListener()
 		chatFlag = 1;
 		// signal to continue
 		printf("%s\n", buffer);
-	}
-}
+	}//End of While
+}//end of ChatListener
 
-void* commandHandler()
-{
-
-}

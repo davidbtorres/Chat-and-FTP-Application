@@ -2,6 +2,6 @@
 #define CLIENT_H_
 
 void* chatListener();
-void* commandHandler();
+
 
 #endif
