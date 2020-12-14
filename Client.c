@@ -41,19 +41,24 @@ const char delimiter[2] = ",";
 
 int main(int argc, char *argv[])
 {
+	if(argc < 3)
+	{
+		printf("Invalid arguments, correct format is:\n./Client <IP> <PORT>\n");
+		return 0;
+	}
+
     /*
     * user is connected to the server
     */
-    char server_IPAddress = argv[0]; 
-    char server_portNumber = argv[1];
+    //char* server_IPAddress = argv[0]; 
+    //int server_portNumber = htons(atoi(argv[2]));
 	int isRunning = 1;
     char* token;
 
     char username[32];
-    char password[32];
+    // char password[32];
 
     strcpy(username, "NOTSIGNEDIN");
-    printf("DEBUG: username at beginning of client.c: %s\n", username);
 
 	socketFD = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -66,13 +71,11 @@ int main(int argc, char *argv[])
 	memset(&serverAddr, 0, sizeof(serverAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(server_portNumber);
-  	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
-  	serverAddr.sin_addr.s_addr = inet_addr(server_IPAddress);
+	serverAddr.sin_port = htons(atoi(argv[2]));
+  	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
-  	pthread_t thread1, thread2;
-  	pthread_create(&thread1, NULL, commandHandler, (void*)NULL);
-	pthread_create(&thread2, NULL, chatListener, (void*)NULL);
+  	pthread_t thread;
+	pthread_create(&thread, NULL, chatListener, (void*)NULL);
 
 	/*
 	Precondition: The user is already signed in.
@@ -89,7 +92,6 @@ int main(int argc, char *argv[])
     	sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
     	printf("%s\n", "Message sent");
     	addressSize = sizeof(serverAddr);
-    	//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
     	while (!chatFlag)
     	{
     		continue;
@@ -97,7 +99,6 @@ int main(int argc, char *argv[])
     	chatFlag = 0;
     	strcpy(bufferOut, buffer);
         token = strtok(buffer, delimiter);
-        printf("%s\n", token);
         if(strcmp(token, "signin") == 0)
         {
         	token = strtok(NULL, delimiter);
@@ -118,7 +119,6 @@ int main(int argc, char *argv[])
 
         else if (strcmp(token, "option0") == 0)
         {
-    		printf("%s\n", "option0 selected");
     		printf("%s\n", bufferOut);
         }//end of else if
 
@@ -127,7 +127,6 @@ int main(int argc, char *argv[])
         	printf("%s\n", "Write your message:");
         	scanf("%s", bufferOut);
     		sendto(socketFD, bufferOut, BUFFERSIZE, MSG_CONFIRM, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
-    		//recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
         }//end of else if
 
         else if (strcmp(token, "refresh") == 0)
@@ -158,7 +157,6 @@ void* chatListener()
 	{
 		recvfrom(socketFD, buffer, BUFFERSIZE, MSG_WAITALL, (struct sockaddr*) &serverAddr, &addressSize);
 		chatFlag = 1;
-		// signal to continue
 		printf("%s\n", buffer);
 	}//End of While
 }//end of ChatListener

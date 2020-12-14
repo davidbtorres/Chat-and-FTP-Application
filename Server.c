@@ -44,8 +44,12 @@ int main(int argc, char *argv[])
 	/*
 	 * bind client to user
 	 */
-	char server_IPAddress = argv[0]; 
-	char server_portNumber = argv[1];
+
+	if(argc < 3)
+	{
+		printf("Invalid arguments, correct format is:\n./Server <IP> <PORT>\n");
+		return 0;
+	}
 
 	int numBytes;
 	
@@ -65,8 +69,8 @@ int main(int argc, char *argv[])
 	memset(&clientAddr, 0, sizeof(clientAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(server_portNumber);
-	serverAddr.sin_addr.s_addr = inet_addr("server_IPAddress");
+	serverAddr.sin_port = htons(atoi(argv[2]));
+	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
@@ -90,7 +94,6 @@ int main(int argc, char *argv[])
 		{
 			perror("Unable to recieve message");
 		}
-		printf("DEBUG: buffer at beginning of server loop: %s\n", buffer);
 		strcpy(bufferOut, buffer);
 
 		/*
@@ -99,7 +102,6 @@ int main(int argc, char *argv[])
 		token = strtok(buffer, delimiter);
 		strcpy(clientContext, token);
 		token = strtok(NULL, delimiter);
-		printf("Token: %s\n", token);
 
 		/*
 		 * Precondition: client is connected to server and is not signed in or registered
@@ -161,7 +163,6 @@ int main(int argc, char *argv[])
  */
 void option0()
 {
-	printf("%s\n", "Option 0 was recieved.");
 	memset(bufferOut, '\0', sizeof(bufferOut));
 	strcpy(bufferOut, "option0,List of users online:\n");
 
@@ -183,8 +184,6 @@ void option0()
  */
 void option1(char username[])
 {
-	printf("%s\n", "Option 1 was recieved.");
-
 	int userStatus = findUser(username);
 
 	if (userStatus != -1)
@@ -208,9 +207,6 @@ void option1(char username[])
  */
 void reg(char password[], char username[])
 {
-	printf("%s\n", "Register option executed.");
-	printf("Username: %s    Password: %s\n", username, password);
-
 	strcpy(allUsers[numUsers].username, username);
 	strcpy(allUsers[numUsers].password, password);
 	allUsers[numUsers].isOnline = 0;
@@ -226,7 +222,6 @@ void reg(char password[], char username[])
  */
 void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 {
-	printf("%s\n", "Signin option executed.");
 	strcpy(bufferOut, "From Server: Could not sign in.");
 
 	for (int k = 0; k < numUsers; k++)
@@ -253,9 +248,6 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
  */
 void signout(char username[])
 {
-	printf("%s\n", "Signout option executed.");
-	printf("clientContext/username: %s\n", username);
-
 	for (int k = 0; k < numUsers; k++)
 	{
 		if (strcmp(allUsers[k].username, username) == 0)
