@@ -1,6 +1,17 @@
 /*
-Project 2
-Networking
+ * CS 484: Networking
+ * Porject 2: Chat Application 
+ * 
+ * Group Member: 
+ *  Omar Navarro 
+ *  David Torres 
+ *  Anaira Quezada
+ *  Anissa Valenzuela
+ * 
+ * Purpose: 
+ * Server function with UDP protocol
+ * Server -> Client
+ * Server.c executes after Client.c function
 */
 
 #include <sys/socket.h>
@@ -28,9 +39,14 @@ socklen_t addressSize;
 struct sockaddr_in serverAddr, clientAddr;
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	
+	/*
+	 * bind client to user
+	 */
+	char server_IPAddress = argv[0]; 
+	char server_portNumber = argv[1];
+
 	int numBytes;
 	
 	char* token;
@@ -49,8 +65,8 @@ int main(void)
 	memset(&clientAddr, 0, sizeof(clientAddr));
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("192.168.1.3");
+	serverAddr.sin_port = htons(server_portNumber);
+	serverAddr.sin_addr.s_addr = inet_addr("server_IPAddress");
 
 	int bindStatus = bind(socketFD, (struct sockaddr*) &serverAddr, sizeof(serverAddr));
 	if(bindStatus == -1)
@@ -61,6 +77,10 @@ int main(void)
 	addressSize = sizeof(clientAddr);
 
 	char clientContext[32];
+	/*
+	 * Precondition: Server has successfully binded to client
+	 * Functionality: Allow Client to issue commands through server
+	 */
 	while (isRunning)
 	{			
 		printf("%s", "Awaiting client...\n");
@@ -73,11 +93,18 @@ int main(void)
 		printf("DEBUG: buffer at beginning of server loop: %s\n", buffer);
 		strcpy(bufferOut, buffer);
 
+		/*
+		 * set token and delimeter values for parsing issued commands
+		 */
 		token = strtok(buffer, delimiter);
 		strcpy(clientContext, token);
 		token = strtok(NULL, delimiter);
 		printf("Token: %s\n", token);
 
+		/*
+		 * Precondition: client is connected to server and is not signed in or registered
+		 * Functionality: create/sign into account for new user
+		 */
 		if (strcmp(clientContext, "NOTSIGNEDIN") == 0)
 		{
 			if (strcmp(token, "register") == 0)
@@ -90,6 +117,14 @@ int main(void)
 				signin(strtok(NULL, delimiter), strtok(NULL, delimiter), (struct sockaddr_in*) &clientAddr);
 			}
 		}
+		/*
+		 * Precondition: client has successfully signed into account
+		 * Functionality: call function for each command
+		 *                option0: print users
+		 *                option1: send message
+		 *                signout: set account offline
+		 *                refresh: issue blank command
+		 */
 		else
 		{
 			if (strcmp(token, "0") == 0)
@@ -120,6 +155,10 @@ int main(void)
 	close(socketFD);
 }
 
+/*
+ * option0():
+ * send client list of all users online
+ */
 void option0()
 {
 	printf("%s\n", "Option 0 was recieved.");
@@ -136,6 +175,12 @@ void option0()
 	}
 }
 
+/*
+ * option1:
+ * determine if recipient is online
+ * if(recipient online) prompt sender to send message
+ * send message to recipient
+ */
 void option1(char username[])
 {
 	printf("%s\n", "Option 1 was recieved.");
@@ -157,6 +202,10 @@ void option1(char username[])
 	strcpy(bufferOut, "Message sent");
 }
 
+/*
+ * register:
+ * create a new user instance given password and username
+ */
 void reg(char password[], char username[])
 {
 	printf("%s\n", "Register option executed.");
@@ -170,6 +219,11 @@ void reg(char password[], char username[])
 	strcpy(bufferOut, "register");
 }
 
+/* 
+ * signin:
+ * determine if username and password match value in userlist
+ * if(username/password valid) set user online
+ */
 void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 {
 	printf("%s\n", "Signin option executed.");
@@ -193,6 +247,10 @@ void signin(char password[], char username[], struct sockaddr_in* clientAddr)
 	}
 }
 
+/*
+ * signout:
+ * set user to offline
+ */
 void signout(char username[])
 {
 	printf("%s\n", "Signout option executed.");
@@ -209,6 +267,12 @@ void signout(char username[])
 	}
 }
 
+/*
+ * findUser:
+ * determine if user is online
+ * if (user online) return element in stack
+ * if (user offline) return -1 
+ */
 int findUser(char username[])
 {
 	int result = -1;
@@ -225,6 +289,10 @@ int findUser(char username[])
 	return result;
 }
 
+/*
+ * refresh:
+ * issue blank command
+ */
 void refresh()
 {
 	strcpy(bufferOut, "refresh");
